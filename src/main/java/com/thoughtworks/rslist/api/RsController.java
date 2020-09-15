@@ -1,7 +1,9 @@
 package com.thoughtworks.rslist.api;
 
+import org.hibernate.annotations.Parameter;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Arrays;
@@ -14,5 +16,11 @@ public class RsController {
     @GetMapping("/rs/event/{index}")
     public String getOneEvent(@PathVariable int index) {
         return rsList.get(index - 1);
+    }
+
+    @GetMapping("rs/event")
+    public String getRangeEvents(@RequestParam(required = false, defaultValue = "1") Integer start,
+                          @RequestParam(required = false, defaultValue = "2") Integer end) {
+      return rsList.subList(start-1, end).toString();
     }
 }

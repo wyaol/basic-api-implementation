@@ -25,5 +25,11 @@ class RsListApplicationTests {
                 .andExpect(content().string("第一条事件"));
     }
 
+    @Test
+    void show_get_range_event() throws Exception {
+        mockMvc.perform(get("/rs/event?start=1&end=3"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("[第一条事件, 第二条事件, 第三条事件]"));
+    }
 
 }
