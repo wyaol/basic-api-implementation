@@ -55,6 +55,7 @@ class RsListApplicationTests {
                 .andExpect(status().isOk());
         mockMvc.perform(get("/rs/event/list_all"))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(4)))
                 .andExpect(jsonPath("$[0].eventName", is("第一条事件")))
                 .andExpect(jsonPath("$[1].eventName", is("第二条事件")))
                 .andExpect(jsonPath("$[2].eventName", is("第三条事件")))
@@ -72,6 +73,25 @@ class RsListApplicationTests {
         mockMvc.perform(get("/rs/event/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.eventName", is("第一件修改后的事件")));
+    }
+
+    @Test
+    void should_delete_one_event() throws Exception {
+        mockMvc.perform(get("/rs/event/list_all"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(3)))
+                .andExpect(jsonPath("$[0].eventName", is("第一条事件")))
+                .andExpect(jsonPath("$[1].eventName", is("第二条事件")))
+                .andExpect(jsonPath("$[2].eventName", is("第三条事件")));
+
+        mockMvc.perform(delete("/rs/event/2"))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/rs/event/list_all"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0].eventName", is("第一条事件")))
+                .andExpect(jsonPath("$[1].eventName", is("第三条事件")));
     }
 
 }
