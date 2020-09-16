@@ -99,4 +99,16 @@ class RsListApplicationTests {
                 .andExpect(jsonPath("$[1].eventName", is("第三条事件")));
 
     }
+
+    @Test
+    void should_throw_when_invalid_request_param() throws Exception {
+        mockMvc.perform(get("/rs/event?start=1&end=4"))
+                .andExpect(jsonPath("$.error", is("invalid request param")));
+    }
+
+    @Test
+    void should_throw_when_invalid_index() throws Exception {
+        mockMvc.perform(get("/rs/event/5"))
+                .andExpect(jsonPath("$.error", is("invalid index")));
+    }
 }

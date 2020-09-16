@@ -1,6 +1,8 @@
 package com.thoughtworks.rslist.api;
 
 import com.thoughtworks.rslist.dto.Event;
+import com.thoughtworks.rslist.exceptions.InvalidIndexException;
+import com.thoughtworks.rslist.exceptions.InvalidRequestParamException;
 import org.hibernate.mapping.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
@@ -23,13 +25,15 @@ public class RsController {
     ));
 
     @GetMapping("/rs/event/{index}")
-    public ResponseEntity getOneEvent(@PathVariable int index) {
+    public ResponseEntity getOneEvent(@PathVariable int index) throws InvalidIndexException {
+        if (index < 0 || index > rsList.size()) throw new InvalidIndexException("invalid index");
         return ResponseEntity.status(Utils.SUCCESS_CODE).header("index", String.valueOf(index - 1)).body(rsList.get(index - 1));
     }
 
     @GetMapping("rs/event")
     public ResponseEntity getRangeEvents(@RequestParam(required = false, defaultValue = "1") Integer start,
-                                         @RequestParam(required = false, defaultValue = "-1") Integer end) {
+                                         @RequestParam(required = false, defaultValue = "-1") Integer end) throws InvalidRequestParamException {
+        if (start < 0 || end > rsList.size()) throw new InvalidRequestParamException("invalid request param");
         return ResponseEntity.status(Utils.SUCCESS_CODE).body(rsList.subList(start - 1, end));
     }
 
