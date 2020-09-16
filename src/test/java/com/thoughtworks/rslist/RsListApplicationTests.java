@@ -30,7 +30,7 @@ class RsListApplicationTests {
                 .andExpect(status().is(201))
                 .andExpect(header().string("index", "0"))
                 .andExpect(jsonPath("$.eventName", is("第一条事件")))
-                .andExpect(jsonPath("$", not(hasKey("userDto"))));
+//                .andExpect(jsonPath("$", not(hasKey("userDto"))));
         ;
     }
 
@@ -122,5 +122,16 @@ class RsListApplicationTests {
     void should_throw_when_invalid_index() throws Exception {
         mockMvc.perform(get("/rs/event/5"))
                 .andExpect(jsonPath("$.error", is("invalid index")));
+    }
+
+    @Test
+    void should_throw_when_invalid_param() throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        Event event = new Event("添加一条热搜", "无分类");
+        UserDto userDto = new UserDto("xiaowang", "female", 17, "email", "18888888888");
+        event.setUserDto(userDto);
+        String json = objectMapper.writeValueAsString(event);
+        mockMvc.perform(post("/rs/event").content(json).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.error", is("invalid param")));
     }
 }

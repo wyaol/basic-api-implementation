@@ -1,6 +1,7 @@
 package com.thoughtworks.rslist;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thoughtworks.rslist.dto.Event;
 import com.thoughtworks.rslist.dto.UserDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,4 +101,14 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$[0].user_email", is("289672494@qq.com")))
                 .andExpect(jsonPath("$[0].user_phone", is("17307404504")));
     }
+
+    @Test
+    void should_throw_when_invalid_user() throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        UserDto userDto = new UserDto("xiaowang", "female", 17, "email", "phone");
+        String json = objectMapper.writeValueAsString(userDto);
+        mockMvc.perform(post("/user/register").content(json).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.error", is("invalid user")));
+    }
+
 }

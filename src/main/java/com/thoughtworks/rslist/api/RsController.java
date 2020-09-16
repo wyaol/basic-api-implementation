@@ -1,13 +1,15 @@
 package com.thoughtworks.rslist.api;
 
+import com.sun.istack.Nullable;
 import com.thoughtworks.rslist.dto.Event;
 import com.thoughtworks.rslist.dto.UserDto;
-import com.thoughtworks.rslist.exceptions.InvalidIndexException;
-import com.thoughtworks.rslist.exceptions.InvalidRequestParamException;
+import com.thoughtworks.rslist.exceptions.*;
 import com.thoughtworks.rslist.utils.Utils;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -40,9 +42,11 @@ public class RsController {
     }
 
     @PostMapping("/rs/event")
-    public ResponseEntity addOneEvent(@RequestBody Event event) {
+    public ResponseEntity addOneEvent(@Valid @RequestBody Event event, BindingResult re) throws InvalidParamException {
+        if (re.getAllErrors().size() != 0) throw new InvalidParamException("invalid param");
+
         UserDto userDto = event.getUserDto();
-        if (!hasUserDto(userDto)) new UserController().register(userDto);
+        if (!hasUserDto(userDto))  UserController.userDtoList.add(userDto);
         rsList.add(event);
         return ResponseEntity.status(Utils.SUCCESS_CODE).header("index", String.valueOf(rsList.indexOf(event))).build();
     }
