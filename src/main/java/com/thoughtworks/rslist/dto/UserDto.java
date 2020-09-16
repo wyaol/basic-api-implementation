@@ -1,6 +1,5 @@
 package com.thoughtworks.rslist.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -19,6 +18,7 @@ public class UserDto {
 
     @NotNull
     @Min(18)
+    @Max(100)
     private Integer age;
     private String email;
     private String phone;
