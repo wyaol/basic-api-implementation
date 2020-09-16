@@ -1,6 +1,5 @@
 package com.thoughtworks.rslist;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.dto.UserDto;
 import org.junit.jupiter.api.Test;
@@ -30,7 +29,7 @@ public class UserControllerTest {
 
     @Test
     void should_register_user() throws Exception {
-        UserDto userDto = new UserDto("name", "gender", 18, "email", "phone");
+        UserDto userDto = new UserDto("name", "gender", 18, "289672494@qq.com", "phone");
         valid(userDto, "/user/register", status().isOk());
     }
 
@@ -67,6 +66,12 @@ public class UserControllerTest {
     @Test
     void should_register_fail_when_age_is_more_then_100() throws Exception {
         UserDto userDto = new UserDto("name", "gender", 101, "email", "phone");
+        valid(userDto, "/user/register", status().isBadRequest());
+    }
+
+    @Test
+    void should_register_fail_when_email_not_standard() throws Exception {
+        UserDto userDto = new UserDto("name", "gender", 18, "email", "phone");
         valid(userDto, "/user/register", status().isBadRequest());
     }
 }
