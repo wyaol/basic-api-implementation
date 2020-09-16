@@ -2,6 +2,7 @@ package com.thoughtworks.rslist;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.dto.Event;
+import com.thoughtworks.rslist.dto.UserDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -24,7 +25,7 @@ class RsListApplicationTests {
     MockMvc mockMvc;
 
     @Test
-    void show_get_one_event() throws Exception {
+    void should_get_one_event() throws Exception {
         mockMvc.perform(get("/rs/event/1"))
                 .andExpect(status().is(201))
                 .andExpect(header().string("index", "0"))
@@ -32,7 +33,7 @@ class RsListApplicationTests {
     }
 
     @Test
-    void show_get_range_event() throws Exception {
+    void should_get_range_event() throws Exception {
         mockMvc.perform(get("/rs/event?start=1&end=3"))
                 .andExpect(status().is(201))
                 .andExpect(jsonPath("$", hasSize(3)))
@@ -42,7 +43,7 @@ class RsListApplicationTests {
     }
 
     @Test
-    void show_add_one_event() throws Exception {
+    void should_add_one_event() throws Exception {
         mockMvc.perform(get("/rs/event/list_all"))
                 .andExpect(status().is(201))
                 .andExpect(jsonPath("$", hasSize(3)))
@@ -50,11 +51,20 @@ class RsListApplicationTests {
                 .andExpect(jsonPath("$[1].eventName", is("第二条事件")))
                 .andExpect(jsonPath("$[2].eventName", is("第三条事件")));
 
-        ObjectMapper objectMapper = new ObjectMapper();
+        mockMvc.perform(get("/users"))
+                .andExpect(jsonPath("$", hasSize(1)));
 
-        mockMvc.perform(post("/rs/event").content(objectMapper.writeValueAsString(new Event("第四条事件", "无分类"))).contentType(MediaType.APPLICATION_JSON))
+        ObjectMapper objectMapper = new ObjectMapper();
+        Event event = new Event("添加一条热搜", "无分类");
+        UserDto userDto = new UserDto("xiaowang", "female", 19, "a@thoughtworks.com", "18888888888");
+        event.setUserDto(userDto);
+        String json = objectMapper.writeValueAsString(event);
+        mockMvc.perform(post("/rs/event").content(json).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(201))
                 .andExpect(header().string("index", "3"));
+
+        mockMvc.perform(get("/users"))
+                .andExpect(jsonPath("$", hasSize(2)));
 
         mockMvc.perform(get("/rs/event/list_all"))
                 .andExpect(status().is(201))
@@ -62,7 +72,7 @@ class RsListApplicationTests {
                 .andExpect(jsonPath("$[0].eventName", is("第一条事件")))
                 .andExpect(jsonPath("$[1].eventName", is("第二条事件")))
                 .andExpect(jsonPath("$[2].eventName", is("第三条事件")))
-                .andExpect(jsonPath("$[3].eventName", is("第四条事件")));
+                .andExpect(jsonPath("$[3].eventName", is("添加一条热搜")));
 
     }
 
