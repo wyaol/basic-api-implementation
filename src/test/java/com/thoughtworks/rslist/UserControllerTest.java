@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultMatcher;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -20,43 +21,40 @@ public class UserControllerTest {
     @Autowired
     MockMvc mockMvc;
 
+    private void valid(UserDto userDto, String url, ResultMatcher resultMatcher) throws Exception {
+        mockMvc.perform(post(url)
+                .content(new ObjectMapper().writeValueAsString(userDto))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(resultMatcher);
+    }
+
     @Test
     void should_register_user() throws Exception {
-        mockMvc.perform(post("/user/register")
-                .content(new ObjectMapper().writeValueAsString(new UserDto("name", "gender", 18, "email", "phone")))
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+        UserDto userDto = new UserDto("name", "gender", 18, "email", "phone");
+        valid(userDto, "/user/register", status().isOk());
     }
 
     @Test
-    void should_not_register_success_when_name_is_empty() throws Exception {
-        mockMvc.perform(post("/user/register")
-                .content(new ObjectMapper().writeValueAsString(new UserDto("", "gender", 18, "email", "phone")))
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+    void should_register_fail_when_name_is_empty() throws Exception {
+        UserDto userDto = new UserDto("", "gender", 18, "email", "phone");
+        valid(userDto, "/user/register", status().isBadRequest());
     }
 
     @Test
-    void should_not_register_success_when_name_size_more_then_8() throws Exception {
-        mockMvc.perform(post("/user/register")
-                .content(new ObjectMapper().writeValueAsString(new UserDto("123456789", "gender", 18, "email", "phone")))
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+    void should_register_fail_when_name_size_more_then_8() throws Exception {
+        UserDto userDto = new UserDto("123456789", "gender", 18, "email", "phone");
+        valid(userDto, "/user/register", status().isBadRequest());
     }
 
     @Test
-    void should_not_register_success_when_gender_is_empty() throws Exception {
-        mockMvc.perform(post("/user/register")
-                .content(new ObjectMapper().writeValueAsString(new UserDto("name", "", 18, "email", "phone")))
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+    void should_register_fail_when_gender_is_empty() throws Exception {
+        UserDto userDto = new UserDto("name", "", 18, "email", "phone");
+        valid(userDto, "/user/register", status().isBadRequest());
     }
 
     @Test
-    void should_not_register_success_when_age_is_empty() throws Exception {
-        mockMvc.perform(post("/user/register")
-                .content(new ObjectMapper().writeValueAsString(new UserDto("name", "gender", null, "email", "phone")))
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+    void should_register_fail_when_age_is_empty() throws Exception {
+        UserDto userDto = new UserDto("name", "gender", null, "email", "phone");
+        valid(userDto, "/user/register", status().isBadRequest());
     }
 }
