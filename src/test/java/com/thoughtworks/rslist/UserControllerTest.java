@@ -35,4 +35,20 @@ public class UserControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    void should_not_register_success_when_name_size_more_then_8() throws Exception {
+        mockMvc.perform(post("/user/register")
+                .content(new ObjectMapper().writeValueAsString(new UserDto("123456789", "gender", 18, "email", "phone")))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void should_not_register_success_when_gender_is_empty() throws Exception {
+        mockMvc.perform(post("/user/register")
+                .content(new ObjectMapper().writeValueAsString(new UserDto("name", "", 18, "email", "phone")))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
 }

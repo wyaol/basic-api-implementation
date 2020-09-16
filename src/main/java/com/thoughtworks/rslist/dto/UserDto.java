@@ -4,14 +4,17 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.*;
 
 @Data
 @NoArgsConstructor
 public class UserDto {
 
     @NotEmpty
+    @Size(max = 8)
     private String name;
+
+    @NotEmpty
     private String gender;
     private Integer age;
     private String email;
