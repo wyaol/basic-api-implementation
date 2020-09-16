@@ -27,4 +27,12 @@ public class UserControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    void should_not_register_success_when_name_is_empty() throws Exception {
+        mockMvc.perform(post("/user/register")
+                .content(new ObjectMapper().writeValueAsString(new UserDto("", "gender", 18, "email", "phone")))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
 }
