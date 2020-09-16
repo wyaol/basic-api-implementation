@@ -57,4 +57,10 @@ public class UserControllerTest {
         UserDto userDto = new UserDto("name", "gender", null, "email", "phone");
         valid(userDto, "/user/register", status().isBadRequest());
     }
+
+    @Test
+    void should_register_fail_when_age_is_less_then_18() throws Exception {
+        UserDto userDto = new UserDto("name", "gender", 17, "email", "phone");
+        valid(userDto, "/user/register", status().isBadRequest());
+    }
 }
