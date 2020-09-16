@@ -30,7 +30,7 @@ public class UserControllerTest {
     @Test
     void should_register_user() throws Exception {
         UserDto userDto = new UserDto("name", "gender", 18, "289672494@qq.com", "17307404504");
-        valid(userDto, "/user/register", status().isOk());
+        valid(userDto, "/user/register", status().is(201));
     }
 
     @Test

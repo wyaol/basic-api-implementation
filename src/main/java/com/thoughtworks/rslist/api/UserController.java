@@ -1,6 +1,7 @@
 package com.thoughtworks.rslist.api;
 
 import com.thoughtworks.rslist.dto.UserDto;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,7 +15,8 @@ public class UserController {
     private List<UserDto> userDtoList = new ArrayList<>();
 
     @PostMapping("/user/register")
-    public void Register(@Valid @RequestBody UserDto userDto) {
+    public ResponseEntity Register(@Valid @RequestBody UserDto userDto) {
         userDtoList.add(userDto);
+        return ResponseEntity.status(201).build();
     }
 }
