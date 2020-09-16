@@ -12,7 +12,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -29,7 +29,9 @@ class RsListApplicationTests {
         mockMvc.perform(get("/rs/event/1"))
                 .andExpect(status().is(201))
                 .andExpect(header().string("index", "0"))
-                .andExpect(jsonPath("$.eventName", is("第一条事件")));
+                .andExpect(jsonPath("$.eventName", is("第一条事件")))
+                .andExpect(jsonPath("$", not(hasKey("userDto"))));
+        ;
     }
 
     @Test

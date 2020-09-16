@@ -1,5 +1,7 @@
 package com.thoughtworks.rslist.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 @Getter
@@ -7,6 +9,8 @@ import lombok.*;
 public class Event {
     private String eventName;
     private String keyWord;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private UserDto userDto;
 
     public Event(String eventName, String keyWord) {
