@@ -7,16 +7,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.hamcrest.Matchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class UserControllerTest {
 
     @Autowired
@@ -29,14 +31,14 @@ public class UserControllerTest {
                 .andExpect(resultMatcher);
     }
 
-    private ResultActions valid(UserDto userDto, String url, ResultMatcher resultMatcher, Integer index) throws Exception {
+    private ResultActions validPost(UserDto userDto, String url, ResultMatcher resultMatcher, Integer index) throws Exception {
         return valid(userDto, url, resultMatcher).andExpect(header().string("index", String.valueOf(index)));
     }
 
     @Test
     void should_register_user() throws Exception {
         UserDto userDto = new UserDto("name", "gender", 18, "289672494@qq.com", "17307404504");
-        valid(userDto, "/user/register", status().is(201), 0);
+        validPost(userDto, "/user/register", status().is(201), 0);
     }
 
     @Test
@@ -85,5 +87,17 @@ public class UserControllerTest {
     void should_register_fail_when_phone_not_standard() throws Exception {
         UserDto userDto = new UserDto("name", "gender", 18, "289672494@qq.com", "phone");
         valid(userDto, "/user/register", status().isBadRequest());
+    }
+
+    @Test
+    void should_return_user_list() throws Exception {
+        mockMvc.perform(get("/users"))
+                .andExpect(status().is(201))
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].user_name", is("name")))
+                .andExpect(jsonPath("$[0].user_gender", is("gender")))
+                .andExpect(jsonPath("$[0].user_age", is(18)))
+                .andExpect(jsonPath("$[0].user_email", is("289672494@qq.com")))
+                .andExpect(jsonPath("$[0].user_phone", is("17307404504")));
     }
 }
