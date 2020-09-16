@@ -8,9 +8,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -20,17 +22,21 @@ public class UserControllerTest {
     @Autowired
     MockMvc mockMvc;
 
-    private void valid(UserDto userDto, String url, ResultMatcher resultMatcher) throws Exception {
-        mockMvc.perform(post(url)
+    private ResultActions valid(UserDto userDto, String url, ResultMatcher resultMatcher) throws Exception {
+        return mockMvc.perform(post(url)
                 .content(new ObjectMapper().writeValueAsString(userDto))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(resultMatcher);
     }
 
+    private ResultActions valid(UserDto userDto, String url, ResultMatcher resultMatcher, Integer index) throws Exception {
+        return valid(userDto, url, resultMatcher).andExpect(header().string("index", String.valueOf(index)));
+    }
+
     @Test
     void should_register_user() throws Exception {
         UserDto userDto = new UserDto("name", "gender", 18, "289672494@qq.com", "17307404504");
-        valid(userDto, "/user/register", status().is(201));
+        valid(userDto, "/user/register", status().is(201), 0);
     }
 
     @Test
