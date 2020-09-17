@@ -93,18 +93,6 @@ public class UserControllerTest {
     }
 
     @Test
-    void should_return_user_list() throws Exception {
-        mockMvc.perform(get("/users"))
-                .andExpect(status().is(201))
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].user_name", is("name")))
-                .andExpect(jsonPath("$[0].user_gender", is("gender")))
-                .andExpect(jsonPath("$[0].user_age", is(18)))
-                .andExpect(jsonPath("$[0].user_email", is("289672494@qq.com")))
-                .andExpect(jsonPath("$[0].user_phone", is("17307404504")));
-    }
-
-    @Test
     void should_throw_when_invalid_user() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
         UserDto userDto = new UserDto("xiaowang", "female", 17, "email", "phone");
