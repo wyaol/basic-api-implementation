@@ -44,40 +44,6 @@ class RsListApplicationTests {
                 .andExpect(jsonPath("$[2].eventName", is("第三条事件")));
     }
 
-//    @Test
-//    void should_add_one_event() throws Exception {
-//        mockMvc.perform(get("/rs/event/list_all"))
-//                .andExpect(status().is(201))
-//                .andExpect(jsonPath("$", hasSize(3)))
-//                .andExpect(jsonPath("$[0].eventName", is("第一条事件")))
-//                .andExpect(jsonPath("$[1].eventName", is("第二条事件")))
-//                .andExpect(jsonPath("$[2].eventName", is("第三条事件")));
-//
-//        mockMvc.perform(get("/users"))
-//                .andExpect(jsonPath("$", hasSize(1)));
-//
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        Event event = new Event("添加一条热搜", "无分类");
-//        UserDto userDto = new UserDto("xiaowang", "female", 19, "a@thoughtworks.com", "18888888888");
-//        event.setUserDto(userDto);
-//        String json = objectMapper.writeValueAsString(event);
-//        mockMvc.perform(post("/rs/event").content(json).contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().is(201))
-//                .andExpect(header().string("index", "3"));
-//
-//        mockMvc.perform(get("/users"))
-//                .andExpect(jsonPath("$", hasSize(2)));
-//
-//        mockMvc.perform(get("/rs/event/list_all"))
-//                .andExpect(status().is(201))
-//                .andExpect(jsonPath("$", hasSize(4)))
-//                .andExpect(jsonPath("$[0].eventName", is("第一条事件")))
-//                .andExpect(jsonPath("$[1].eventName", is("第二条事件")))
-//                .andExpect(jsonPath("$[2].eventName", is("第三条事件")))
-//                .andExpect(jsonPath("$[3].eventName", is("添加一条热搜")));
-//
-//    }
-
     @Test
     void should_fail_add_one_event_when_user_not_exist() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -90,31 +56,39 @@ class RsListApplicationTests {
 
     @Test
     void should_add_one_event() throws Exception {
-        ObjectMapper objectMapper = new ObjectMapper();
         UserDto userDto = new UserDto("wan", "gender", 18, "289672494@qq.com", "17307404504");
+        Event event = new Event("热搜事件名", "关键字", 1);
+        addOneEvent(userDto, event);
+    }
+
+    private void addOneEvent(UserDto userDto, Event event) throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+
         mockMvc.perform(post("/user/register").content(objectMapper.writeValueAsString(userDto)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
 
-        Event event = new Event("热搜事件名", "关键字", 1);
         String json = objectMapper.writeValueAsString(event);
 
         mockMvc.perform(post("/rs/event").content(json).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated())
-                .andExpect(header().string("index", "1"));
+                .andExpect(status().isCreated());
     }
 
-//    @Test
-//    void should_edit_one_event() throws Exception {
-//        mockMvc.perform(get("/rs/event/1"))
-//                .andExpect(status().is(201))
-//                .andExpect(jsonPath("$.eventName", is("第一条事件")));
-//        mockMvc.perform(put("/rs/event/1").content(new ObjectMapper().writeValueAsString(new Event("第一件修改后的事件", null))).contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().is(201))
-//                .andExpect(header().string("index", "0"));
-//        mockMvc.perform(get("/rs/event/1"))
-//                .andExpect(status().is(201))
-//                .andExpect(jsonPath("$.eventName", is("第一件修改后的事件")));
-//    }
+    @Test
+    void should_edit_one_event() throws Exception {
+        UserDto userDto = new UserDto("wan", "gender", 18, "289672494@qq.com", "17307404504");
+        Event event = new Event("热搜事件名", "关键字", 1);
+        addOneEvent(userDto, event);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        Event newEvent = new Event("新的热搜事件名", "新的关键字", 1);
+        String json = objectMapper.writeValueAsString(newEvent);
+
+        mockMvc.perform(patch("/rs/1").content(json).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        mockMvc.perform(get("/rs/event/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.eventName", is("新的热搜事件名")));
+    }
 
     @Test
     void should_delete_one_event() throws Exception {

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 
@@ -23,4 +24,6 @@ public class EventEntity {
     private String eventName;
     private String keyWord;
     private Integer userId;
+    @ColumnDefault("0")
+    private Integer voteNum;
 }

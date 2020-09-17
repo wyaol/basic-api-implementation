@@ -2,6 +2,7 @@ package com.thoughtworks.rslist.service;
 
 import com.thoughtworks.rslist.dto.Event;
 import com.thoughtworks.rslist.entity.EventEntity;
+import com.thoughtworks.rslist.exceptions.CommonException;
 import com.thoughtworks.rslist.repository.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EventService {
@@ -17,7 +19,7 @@ public class EventService {
     EventRepository eventRepository;
 
     private Event eventEntityToEvent(EventEntity eventEntity) {
-        return new Event(eventEntity.getEventName(), eventEntity.getKeyWord(), eventEntity.getUserId());
+        return new Event(eventEntity.getEventName(), eventEntity.getKeyWord(), eventEntity.getUserId(), eventEntity.getVoteNum());
     }
 
     private EventEntity eventToEventEntity(Event event) {
@@ -25,6 +27,7 @@ public class EventService {
                 .eventName(event.getEventName())
                 .keyWord(event.getKeyWord())
                 .userId(event.getUserId())
+                .voteNum(event.getVoteNum())
                 .build();
     }
 
@@ -37,5 +40,21 @@ public class EventService {
         Iterable<EventEntity> eventEntities = eventRepository.findAll();
         eventEntities.forEach(eventEntity -> events.add(eventEntityToEvent(eventEntity)));
         return events;
+    }
+
+    public void updateEvent(Integer eventId, Event event) throws CommonException {
+        Optional<EventEntity> res = eventRepository.findById(eventId);
+        if (!res.isPresent()) throw new CommonException(String.format("can not find event by id %d", eventId));
+        EventEntity eventEntity = res.get();
+        if (!eventEntity.getUserId().equals(event.getUserId())) throw new CommonException("user id mismatch event");
+        if (event.getKeyWord() != null) eventEntity.setKeyWord(event.getKeyWord());
+        if (event.getEventName() != null) eventEntity.setEventName(event.getEventName());
+        eventRepository.save(eventEntity);
+    }
+
+    public Event getEventById(Integer id) throws CommonException {
+        Optional<EventEntity> res = eventRepository.findById(id);
+        if (res.isPresent()) return eventEntityToEvent(res.get());
+        else throw new CommonException(String.format("can not find event by id %d", id));
     }
 }
