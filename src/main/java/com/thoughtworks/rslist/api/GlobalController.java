@@ -14,10 +14,7 @@ public class GlobalController {
     Logger logger = LoggerFactory.getLogger(GlobalController.class);
 
     @ExceptionHandler({
-            InvalidRequestParamException.class,
-            InvalidIndexException.class,
-            InvalidParamException.class,
-            InvalidUserException.class
+            CommonException.class
     })
     public ResponseEntity handleException(Exception e) {
         logger.error(e.getMessage());
