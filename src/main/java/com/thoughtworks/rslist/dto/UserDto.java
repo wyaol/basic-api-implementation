@@ -43,5 +43,6 @@ public class UserDto {
         this.age = age;
         this.email = email;
         this.phone = phone;
+        this.vote = 10;
     }
 }

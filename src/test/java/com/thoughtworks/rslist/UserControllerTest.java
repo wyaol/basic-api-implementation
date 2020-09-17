@@ -2,15 +2,17 @@ package com.thoughtworks.rslist;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.dto.UserDto;
+import com.thoughtworks.rslist.entity.UserEntity;
+import com.thoughtworks.rslist.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.ResultMatcher;
+import org.springframework.test.web.servlet.*;
+
+import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -39,7 +41,7 @@ public class UserControllerTest {
 
     @Test
     void should_register_user() throws Exception {
-        UserDto userDto = new UserDto("name", "gender", 18, "289672494@qq.com", "17307404504");
+        UserDto userDto = new UserDto("wan", "gender", 18, "289672494@qq.com", "17307404504");
         validPost(userDto, "/user/register", status().is(201));
     }
 
@@ -110,5 +112,14 @@ public class UserControllerTest {
         String json = objectMapper.writeValueAsString(userDto);
         mockMvc.perform(post("/user/register").content(json).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.error", is("invalid user")));
+    }
+
+    @Test
+    void should_get_user_by_id() throws Exception {
+        UserDto userDto = new UserDto("wan", "gender", 18, "289672494@qq.com", "17307404504");
+        validPost(userDto, "/user/register", status().isCreated());
+        mockMvc.perform(get("/user/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.user_name", is("wan")));
     }
 }
