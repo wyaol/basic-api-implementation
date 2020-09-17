@@ -1,11 +1,12 @@
 package com.thoughtworks.rslist.api;
 
 import com.thoughtworks.rslist.dto.Event;
-import com.thoughtworks.rslist.dto.UserDto;
+import com.thoughtworks.rslist.dto.VoteDto;
 import com.thoughtworks.rslist.exceptions.CommonException;
 import com.thoughtworks.rslist.exceptions.InvalidParamException;
 import com.thoughtworks.rslist.service.EventService;
 import com.thoughtworks.rslist.service.UserService;
+import com.thoughtworks.rslist.service.VoteService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -23,6 +24,9 @@ public class RsController {
 
     @Resource
     EventService eventService;
+
+    @Resource
+    VoteService voteService;
 
     @GetMapping("/rs/event/{id}")
     public ResponseEntity getOneEvent(@PathVariable int id) throws CommonException {
@@ -63,11 +67,10 @@ public class RsController {
 //        return ResponseEntity.created(null).header("index", String.valueOf(index - 1)).build();
 //    }
 
-    private Boolean hasUserDto(UserDto userDto) {
-        List<UserDto> userList = UserController.userDtoList;
-        for (int i = 0; i < userList.size(); ++i) {
-            if (userList.get(i).getName().equals(userDto.getName())) return true;
-        }
-        return false;
+    @PostMapping("/rs/vote/{rsEventId}")
+    public ResponseEntity vote(@PathVariable int rsEventId, @RequestBody VoteDto voteDto) throws CommonException {
+        voteDto.setEventId(rsEventId);
+        voteService.vote(voteDto);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

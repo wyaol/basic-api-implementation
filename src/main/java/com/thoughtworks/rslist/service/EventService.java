@@ -47,8 +47,7 @@ public class EventService {
         if (!res.isPresent()) throw new CommonException(String.format("can not find event by id %d", eventId));
         EventEntity eventEntity = res.get();
         if (!eventEntity.getUserId().equals(event.getUserId())) throw new CommonException("user id mismatch event");
-        if (event.getKeyWord() != null) eventEntity.setKeyWord(event.getKeyWord());
-        if (event.getEventName() != null) eventEntity.setEventName(event.getEventName());
+        eventEntity.setByEvent(event);
         eventRepository.save(eventEntity);
     }
 

@@ -1,5 +1,6 @@
 package com.thoughtworks.rslist.entity;
 
+import com.thoughtworks.rslist.dto.UserDto;
 import lombok.*;
 
 import javax.persistence.*;
@@ -26,4 +27,13 @@ public class UserEntity {
 
     @OneToMany(mappedBy = "userId", cascade = CascadeType.REMOVE)
     List<EventEntity> eventEntities;
+
+    public void setByUserDto(UserDto userDto) {
+        if (userDto.getVote() != null) this.vote = userDto.getVote();
+        if (userDto.getName() != null) this.name = userDto.getName();
+        if (userDto.getAge() != null) this.age = userDto.getAge();
+        if (userDto.getEmail() != null) this.email = userDto.getEmail();
+        if (userDto.getGender() != null) this.gender = userDto.getGender();
+        if (userDto.getPhone() != null) this.phone = userDto.getPhone();
+    }
 }

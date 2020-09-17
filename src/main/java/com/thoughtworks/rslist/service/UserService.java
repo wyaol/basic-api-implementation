@@ -62,4 +62,17 @@ public class UserService {
     public void deleteOneUser(Integer userId) {
         userRepository.deleteById(userId);
     }
+
+    public void updateUserById(Integer id, UserDto userDto) throws CommonException {
+//        Optional<UserEntity> res =  userRepository.findById(id);
+//        if (res.isPresent()) {
+//            UserEntity userEntity = res.get();
+//            userEntity.setId(id);
+//            userRepository.save(userEntity);
+//        } else
+//            throw new CommonException(String.format("can not find user by id %d", id));
+        UserEntity userEntity = userDtoToUserEntity(userDto);
+        userEntity.setId(id);
+        userRepository.save(userEntity);
+    }
 }

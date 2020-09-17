@@ -3,6 +3,7 @@ package com.thoughtworks.rslist;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.dto.Event;
 import com.thoughtworks.rslist.dto.UserDto;
+import com.thoughtworks.rslist.dto.VoteDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -58,10 +59,10 @@ class RsListApplicationTests {
     void should_add_one_event() throws Exception {
         UserDto userDto = new UserDto("wan", "gender", 18, "289672494@qq.com", "17307404504");
         Event event = new Event("热搜事件名", "关键字", 1);
-        addOneEvent(userDto, event);
+        addOneEventAndUser(userDto, event);
     }
 
-    private void addOneEvent(UserDto userDto, Event event) throws Exception {
+    private void addOneEventAndUser(UserDto userDto, Event event) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
 
         mockMvc.perform(post("/user/register").content(objectMapper.writeValueAsString(userDto)).contentType(MediaType.APPLICATION_JSON))
@@ -77,7 +78,7 @@ class RsListApplicationTests {
     void should_edit_one_event() throws Exception {
         UserDto userDto = new UserDto("wan", "gender", 18, "289672494@qq.com", "17307404504");
         Event event = new Event("热搜事件名", "关键字", 1);
-        addOneEvent(userDto, event);
+        addOneEventAndUser(userDto, event);
 
         ObjectMapper objectMapper = new ObjectMapper();
         Event newEvent = new Event("新的热搜事件名", "新的关键字", 1);
@@ -123,14 +124,22 @@ class RsListApplicationTests {
                 .andExpect(jsonPath("$.error", is("invalid index")));
     }
 
-//    @Test
-//    void should_throw_when_invalid_param() throws Exception {
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        Event event = new Event("添加一条热搜", "无分类");
-//        UserDto userDto = new UserDto("xiaowang", "female", 17, "email", "18888888888");
-//        event.setUserDto(userDto);
-//        String json = objectMapper.writeValueAsString(event);
-//        mockMvc.perform(post("/rs/event").content(json).contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(jsonPath("$.error", is("invalid param")));
-//    }
+    @Test
+    void vote() throws Exception {
+        UserDto userDto = new UserDto("wan", "gender", 18, "289672494@qq.com", "17307404504");
+        Event event = new Event("热搜事件名", "关键字", 1);
+        addOneEventAndUser(userDto, event);
+
+        VoteDto voteDto = new VoteDto(1, 1, 5, "current time");
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(voteDto);
+        mockMvc.perform(post("/rs/vote/1").content(json).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+        mockMvc.perform(get("/rs/event/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.voteNum", is(5)));
+        mockMvc.perform(get("/user/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.vote", is(5)));
+    }
 }
