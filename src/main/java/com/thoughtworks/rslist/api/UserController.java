@@ -32,11 +32,17 @@ public class UserController {
 
     @GetMapping("/users")
     public ResponseEntity getUsers() {
-        return ResponseEntity.created(null).body(userService.getAllUser());
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getAllUser());
     }
 
     @GetMapping("/user/{userId}")
     public ResponseEntity getOneUserById(@PathVariable(name = "userId") Integer userId) throws CommonException {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getOneUser(userId));
+    }
+
+    @DeleteMapping("/user/{userId}")
+    public ResponseEntity deleteOneUserById(@PathVariable(name = "userId") Integer userId) throws CommonException {
+        userService.deleteOneUser(userId);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

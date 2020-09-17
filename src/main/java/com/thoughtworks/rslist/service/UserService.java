@@ -17,25 +17,6 @@ public class UserService {
     @Autowired
     UserRepository userRepository;
 
-    public Integer addOneUser(UserDto userDto) {
-        return userRepository.save(userDtoToUserEntity(userDto)).getId();
-    }
-
-    public List<UserDto> getAllUser() {
-        List<UserEntity> userEntities = userRepository.findAll();
-        List<UserDto> userDtos = new ArrayList<>();
-        userEntities.forEach(userEntity -> userDtos.add(userEntityToUserDto(userEntity)));
-        return userDtos;
-    }
-
-    public UserDto getOneUser(Integer userId) throws CommonException {
-        Optional<UserEntity> res =  userRepository.findById(userId);
-        if (res.isPresent())
-            return userEntityToUserDto(res.get());
-        else
-            throw new CommonException(String.format("can not find user by id %d", userId));
-    }
-
     private UserEntity userDtoToUserEntity(UserDto userDto) {
         return UserEntity.builder()
                 .name(userDto.getName())
@@ -58,4 +39,26 @@ public class UserService {
         );
     }
 
+    public Integer addOneUser(UserDto userDto) {
+        return userRepository.save(userDtoToUserEntity(userDto)).getId();
+    }
+
+    public List<UserDto> getAllUser() {
+        List<UserEntity> userEntities = userRepository.findAll();
+        List<UserDto> userDtos = new ArrayList<>();
+        userEntities.forEach(userEntity -> userDtos.add(userEntityToUserDto(userEntity)));
+        return userDtos;
+    }
+
+    public UserDto getOneUser(Integer userId) throws CommonException {
+        Optional<UserEntity> res =  userRepository.findById(userId);
+        if (res.isPresent())
+            return userEntityToUserDto(res.get());
+        else
+            throw new CommonException(String.format("can not find user by id %d", userId));
+    }
+
+    public void deleteOneUser(Integer userId) {
+        userRepository.deleteById(userId);
+    }
 }
