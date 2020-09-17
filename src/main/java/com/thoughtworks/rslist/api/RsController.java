@@ -1,10 +1,11 @@
 package com.thoughtworks.rslist.api;
 
-import com.sun.istack.Nullable;
 import com.thoughtworks.rslist.dto.Event;
 import com.thoughtworks.rslist.dto.UserDto;
-import com.thoughtworks.rslist.exceptions.*;
-import com.thoughtworks.rslist.utils.Utils;
+import com.thoughtworks.rslist.exceptions.InvalidIndexException;
+import com.thoughtworks.rslist.exceptions.InvalidParamException;
+import com.thoughtworks.rslist.exceptions.InvalidRequestParamException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -26,19 +27,19 @@ public class RsController {
     @GetMapping("/rs/event/{index}")
     public ResponseEntity getOneEvent(@PathVariable int index) throws InvalidIndexException {
         if (index < 0 || index > rsList.size()) throw new InvalidIndexException("invalid index");
-        return ResponseEntity.status(Utils.SUCCESS_CODE).header("index", String.valueOf(index - 1)).body(rsList.get(index - 1));
+        return ResponseEntity.created(null).header("index", String.valueOf(index - 1)).body(rsList.get(index - 1));
     }
 
     @GetMapping("/rs/event")
     public ResponseEntity getRangeEvents(@RequestParam(required = false, defaultValue = "1") Integer start,
                                          @RequestParam(required = false, defaultValue = "-1") Integer end) throws InvalidRequestParamException {
         if (start < 0 || end > rsList.size()) throw new InvalidRequestParamException("invalid request param");
-        return ResponseEntity.status(Utils.SUCCESS_CODE).body(rsList.subList(start - 1, end));
+        return ResponseEntity.created(null).body(rsList.subList(start - 1, end));
     }
 
     @GetMapping("/rs/event/list_all")
     public ResponseEntity getAllEvent() {
-        return ResponseEntity.status(Utils.SUCCESS_CODE).body(rsList);
+        return ResponseEntity.created(null).body(rsList);
     }
 
     @PostMapping("/rs/event")
@@ -48,20 +49,20 @@ public class RsController {
         UserDto userDto = event.getUserDto();
         if (!hasUserDto(userDto))  UserController.userDtoList.add(userDto);
         rsList.add(event);
-        return ResponseEntity.status(Utils.SUCCESS_CODE).header("index", String.valueOf(rsList.indexOf(event))).build();
+        return ResponseEntity.status(HttpStatus.CREATED).header("index", String.valueOf(rsList.indexOf(event))).build();
     }
 
     @PutMapping("/rs/event/{index}")
     public ResponseEntity editOneEvent(@PathVariable("index") int index, @RequestBody Event event) {
         if (event.getEventName() != null) rsList.get(index - 1).setEventName(event.getEventName());
         if (event.getKeyWord() != null) rsList.get(index - 1).setKeyWord(event.getKeyWord());
-        return ResponseEntity.status(Utils.SUCCESS_CODE).header("index", String.valueOf(index - 1)).build();
+        return ResponseEntity.created(null).header("index", String.valueOf(index - 1)).build();
     }
 
     @DeleteMapping("/rs/event/{index}")
     public ResponseEntity deleteOneEvent(@PathVariable("index") int index) {
         if (index < rsList.size()) rsList.remove(index - 1);
-        return ResponseEntity.status(Utils.SUCCESS_CODE).header("index", String.valueOf(index - 1)).build();
+        return ResponseEntity.created(null).header("index", String.valueOf(index - 1)).build();
     }
 
     private Boolean hasUserDto(UserDto userDto) {

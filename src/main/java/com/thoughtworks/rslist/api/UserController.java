@@ -1,9 +1,8 @@
 package com.thoughtworks.rslist.api;
 
-import com.sun.istack.Nullable;
 import com.thoughtworks.rslist.dto.UserDto;
 import com.thoughtworks.rslist.exceptions.InvalidUserException;
-import com.thoughtworks.rslist.utils.Utils;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,11 +23,11 @@ public class UserController {
     public ResponseEntity register(@Valid @RequestBody UserDto userDto, BindingResult re) throws InvalidUserException {
         if (re.getAllErrors().size() != 0) throw new InvalidUserException("invalid user");
         userDtoList.add(userDto);
-        return ResponseEntity.status(Utils.SUCCESS_CODE).header("index", String.valueOf(userDtoList.indexOf(userDto))).build();
+        return ResponseEntity.status(HttpStatus.CREATED).header("index", String.valueOf(userDtoList.indexOf(userDto))).build();
     }
 
     @GetMapping("/users")
     public ResponseEntity getUsers() {
-        return ResponseEntity.status(Utils.SUCCESS_CODE).body(userDtoList);
+        return ResponseEntity.created(null).body(userDtoList);
     }
 }
