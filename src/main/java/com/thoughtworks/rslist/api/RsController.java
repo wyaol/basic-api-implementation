@@ -41,10 +41,11 @@ public class RsController {
 //        return ResponseEntity.created(null).body(rsList.subList(start - 1, end));
 //    }
 //
-//    @GetMapping("/rs/event/list_all")
-//    public ResponseEntity getAllEvent() {
-//        return ResponseEntity.created(null).body(rsList);
-//    }
+    @GetMapping("/rs/event/list_all")
+    public ResponseEntity getAllEvent() {
+        List<Event> events = eventService.getEvents();
+        return ResponseEntity.status(HttpStatus.OK).body(events);
+    }
 
     @PostMapping("/rs/event")
     public ResponseEntity addOneEvent(@Valid @RequestBody Event event, BindingResult re) throws CommonException {

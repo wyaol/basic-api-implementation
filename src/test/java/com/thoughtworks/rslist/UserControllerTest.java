@@ -1,6 +1,7 @@
 package com.thoughtworks.rslist;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thoughtworks.rslist.dto.Event;
 import com.thoughtworks.rslist.dto.UserDto;
 import com.thoughtworks.rslist.entity.UserEntity;
 import com.thoughtworks.rslist.repository.UserRepository;
@@ -117,6 +118,35 @@ public class UserControllerTest {
         mockMvc.perform(delete("/user/1"))
                 .andExpect(status().isOk());
         mockMvc.perform(get("/users"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(0)));
+
+    }
+
+    @Test
+    void should_delete_user_and_delete_events_by_id() throws Exception {
+        // 添加用户
+        ObjectMapper objectMapper = new ObjectMapper();
+        UserDto userDto = new UserDto("wan", "gender", 18, "289672494@qq.com", "17307404504");
+        mockMvc.perform(post("/user/register").content(objectMapper.writeValueAsString(userDto)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+
+        // 添加时事件
+        Event event = new Event("热搜事件名", "关键字", 1);
+        String json = objectMapper.writeValueAsString(event);
+        mockMvc.perform(post("/rs/event").content(json).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andExpect(header().string("index", "1"));
+
+        // 删除用户
+        mockMvc.perform(delete("/user/1"))
+                .andExpect(status().isOk());
+
+        // 查看用户和事件
+        mockMvc.perform(get("/users"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(0)));
+        mockMvc.perform(get("/rs/event/list_all"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(0)));
 

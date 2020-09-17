@@ -22,7 +22,5 @@ public class EventEntity {
     @Column(name = "name")
     private String eventName;
     private String keyWord;
-
-    @Column(name = "user_id")
     private Integer userId;
 }

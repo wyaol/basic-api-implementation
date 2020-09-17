@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,7 +21,7 @@ public class UserController {
 
     public static List<UserDto> userDtoList = new ArrayList<>(Arrays.asList(new UserDto("name", "gender", 18, "289672494@qq.com", "17307404504")));
 
-    @Autowired
+    @Resource
     UserService userService;
 
     @PostMapping("/user/register")

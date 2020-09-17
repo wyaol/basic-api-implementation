@@ -6,10 +6,14 @@ import com.thoughtworks.rslist.repository.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class EventService {
 
-    @Autowired
+    @Resource
     EventRepository eventRepository;
 
     private Event eventEntityToEvent(EventEntity eventEntity) {
@@ -26,5 +30,12 @@ public class EventService {
 
     public Integer addOneEvent(Event event) {
         return eventRepository.save(eventToEventEntity(event)).getId();
+    }
+
+    public List<Event> getEvents() {
+        List<Event> events = new ArrayList<>();
+        Iterable<EventEntity> eventEntities = eventRepository.findAll();
+        eventEntities.forEach(eventEntity -> events.add(eventEntityToEvent(eventEntity)));
+        return events;
     }
 }

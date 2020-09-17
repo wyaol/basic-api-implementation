@@ -3,6 +3,7 @@ package com.thoughtworks.rslist.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "user")
@@ -22,4 +23,7 @@ public class UserEntity {
     private String email;
     private String phone;
     private Integer vote;
+
+    @OneToMany(mappedBy = "userId", cascade = CascadeType.REMOVE)
+    List<EventEntity> eventEntities;
 }
