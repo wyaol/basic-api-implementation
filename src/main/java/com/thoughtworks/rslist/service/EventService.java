@@ -56,4 +56,8 @@ public class EventService {
         if (res.isPresent()) return eventEntityToEvent(res.get());
         else throw new CommonException(String.format("can not find event by id %d", id));
     }
+
+    public void deleteEventById(Integer id) {
+        eventRepository.deleteById(id);
+    }
 }

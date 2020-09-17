@@ -26,26 +26,6 @@ class RsListApplicationTests {
     MockMvc mockMvc;
 
     @Test
-    void should_get_one_event() throws Exception {
-        mockMvc.perform(get("/rs/event/1"))
-                .andExpect(status().is(201))
-                .andExpect(header().string("index", "0"))
-                .andExpect(jsonPath("$.eventName", is("第一条事件")))
-//                .andExpect(jsonPath("$", not(hasKey("userDto"))));
-        ;
-    }
-
-    @Test
-    void should_get_range_event() throws Exception {
-        mockMvc.perform(get("/rs/event?start=1&end=3"))
-                .andExpect(status().is(201))
-                .andExpect(jsonPath("$", hasSize(3)))
-                .andExpect(jsonPath("$[0].eventName", is("第一条事件")))
-                .andExpect(jsonPath("$[1].eventName", is("第二条事件")))
-                .andExpect(jsonPath("$[2].eventName", is("第三条事件")));
-    }
-
-    @Test
     void should_fail_add_one_event_when_user_not_exist() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
         Event event = new Event("热搜事件名", "关键字", 1);
@@ -93,22 +73,16 @@ class RsListApplicationTests {
 
     @Test
     void should_delete_one_event() throws Exception {
-        mockMvc.perform(get("/rs/event/list_all"))
-                .andExpect(status().is(201))
-                .andExpect(jsonPath("$", hasSize(3)))
-                .andExpect(jsonPath("$[0].eventName", is("第一条事件")))
-                .andExpect(jsonPath("$[1].eventName", is("第二条事件")))
-                .andExpect(jsonPath("$[2].eventName", is("第三条事件")));
+        UserDto userDto = new UserDto("wan", "gender", 18, "289672494@qq.com", "17307404504");
+        Event event = new Event("热搜事件名", "关键字", 1);
+        addOneEventAndUser(userDto, event);
 
-        mockMvc.perform(delete("/rs/event/2"))
-                .andExpect(status().is(201))
-                .andExpect(header().string("index", "1"));;
+        mockMvc.perform(delete("/rs/event/1"))
+                .andExpect(status().isOk());
 
         mockMvc.perform(get("/rs/event/list_all"))
-                .andExpect(status().is(201))
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].eventName", is("第一条事件")))
-                .andExpect(jsonPath("$[1].eventName", is("第三条事件")));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(0)));
 
     }
 
@@ -116,12 +90,6 @@ class RsListApplicationTests {
     void should_throw_when_invalid_request_param() throws Exception {
         mockMvc.perform(get("/rs/event?start=1&end=4"))
                 .andExpect(jsonPath("$.error", is("invalid request param")));
-    }
-
-    @Test
-    void should_throw_when_invalid_index() throws Exception {
-        mockMvc.perform(get("/rs/event/5"))
-                .andExpect(jsonPath("$.error", is("invalid index")));
     }
 
     @Test

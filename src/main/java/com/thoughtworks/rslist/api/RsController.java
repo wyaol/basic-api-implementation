@@ -4,6 +4,7 @@ import com.thoughtworks.rslist.dto.Event;
 import com.thoughtworks.rslist.dto.VoteDto;
 import com.thoughtworks.rslist.exceptions.CommonException;
 import com.thoughtworks.rslist.exceptions.InvalidParamException;
+import com.thoughtworks.rslist.exceptions.InvalidRequestParamException;
 import com.thoughtworks.rslist.service.EventService;
 import com.thoughtworks.rslist.service.UserService;
 import com.thoughtworks.rslist.service.VoteService;
@@ -14,7 +15,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class RsController {
@@ -34,13 +37,14 @@ public class RsController {
         return ResponseEntity.status(HttpStatus.OK).body(event);
     }
 
-//    @GetMapping("/rs/event")
-//    public ResponseEntity getRangeEvents(@RequestParam(required = false, defaultValue = "1") Integer start,
-//                                         @RequestParam(required = false, defaultValue = "-1") Integer end) throws InvalidRequestParamException {
-//        if (start < 0 || end > rsList.size()) throw new InvalidRequestParamException("invalid request param");
-//        return ResponseEntity.created(null).body(rsList.subList(start - 1, end));
-//    }
-//
+    @GetMapping("/rs/event")
+    public ResponseEntity getRangeEvents(@RequestParam(required = false, defaultValue = "1") Integer start,
+                                         @RequestParam(required = false, defaultValue = "-1") Integer end) throws InvalidRequestParamException {
+        List<Event> events = eventService.getEvents();
+        if (start < 0 || end > events.size()) throw new InvalidRequestParamException("invalid request param");
+        return ResponseEntity.created(null).body(events.subList(start - 1, end));
+    }
+
     @GetMapping("/rs/event/list_all")
     public ResponseEntity getAllEvent() {
         List<Event> events = eventService.getEvents();
@@ -60,12 +64,13 @@ public class RsController {
         eventService.updateEvent(rsEventId, event);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
-//
-//    @DeleteMapping("/rs/event/{index}")
-//    public ResponseEntity deleteOneEvent(@PathVariable("index") int index) {
-//        if (index < rsList.size()) rsList.remove(index - 1);
-//        return ResponseEntity.created(null).header("index", String.valueOf(index - 1)).build();
-//    }
+
+    @DeleteMapping("/rs/event/{id}")
+    public ResponseEntity deleteOneEvent(@PathVariable("id") int id) {
+        List<Event> events = eventService.getEvents();
+        eventService.deleteEventById(id);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 
     @PostMapping("/rs/vote/{rsEventId}")
     public ResponseEntity vote(@PathVariable int rsEventId, @RequestBody VoteDto voteDto) throws CommonException {

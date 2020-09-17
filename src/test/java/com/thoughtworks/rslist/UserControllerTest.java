@@ -135,8 +135,7 @@ public class UserControllerTest {
         Event event = new Event("热搜事件名", "关键字", 1);
         String json = objectMapper.writeValueAsString(event);
         mockMvc.perform(post("/rs/event").content(json).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated())
-                .andExpect(header().string("index", "1"));
+                .andExpect(status().isCreated());
 
         // 删除用户
         mockMvc.perform(delete("/user/1"))
