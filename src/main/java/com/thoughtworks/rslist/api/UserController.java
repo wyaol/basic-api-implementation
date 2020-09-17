@@ -2,6 +2,8 @@ package com.thoughtworks.rslist.api;
 
 import com.thoughtworks.rslist.dto.UserDto;
 import com.thoughtworks.rslist.exceptions.InvalidUserException;
+import com.thoughtworks.rslist.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -17,13 +19,17 @@ import java.util.List;
 
 @RestController
 public class UserController {
+
     public static List<UserDto> userDtoList = new ArrayList<>(Arrays.asList(new UserDto("name", "gender", 18, "289672494@qq.com", "17307404504")));
+
+    @Autowired
+    UserService userService;
 
     @PostMapping("/user/register")
     public ResponseEntity register(@Valid @RequestBody UserDto userDto, BindingResult re) throws InvalidUserException {
         if (re.getAllErrors().size() != 0) throw new InvalidUserException("invalid user");
-        userDtoList.add(userDto);
-        return ResponseEntity.status(HttpStatus.CREATED).header("index", String.valueOf(userDtoList.indexOf(userDto))).build();
+        Integer userId = userService.addOneUser(userDto);
+        return ResponseEntity.status(HttpStatus.CREATED).header("index", String.valueOf(userId)).build();
     }
 
     @GetMapping("/users")
