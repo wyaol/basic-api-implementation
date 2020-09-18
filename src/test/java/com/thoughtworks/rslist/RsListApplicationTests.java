@@ -12,10 +12,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDateTime;
+
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -93,12 +96,12 @@ class RsListApplicationTests {
     }
 
     @Test
-    void vote() throws Exception {
+    void should_vote() throws Exception {
         UserDto userDto = new UserDto("wan", "gender", 18, "289672494@qq.com", "17307404504");
         Event event = new Event("热搜事件名", "关键字", 1);
         addOneEventAndUser(userDto, event);
 
-        VoteDto voteDto = new VoteDto(1, 1, 5, "current time");
+        VoteDto voteDto = new VoteDto(1, 1, 5, LocalDateTime.now());
         ObjectMapper objectMapper = new ObjectMapper();
         String json = objectMapper.writeValueAsString(voteDto);
         mockMvc.perform(post("/rs/vote/1").content(json).contentType(MediaType.APPLICATION_JSON))

@@ -4,7 +4,6 @@ import com.thoughtworks.rslist.dto.UserDto;
 import com.thoughtworks.rslist.exceptions.CommonException;
 import com.thoughtworks.rslist.exceptions.InvalidUserException;
 import com.thoughtworks.rslist.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;

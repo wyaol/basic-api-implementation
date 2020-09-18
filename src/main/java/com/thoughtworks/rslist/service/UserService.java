@@ -4,7 +4,6 @@ import com.thoughtworks.rslist.dto.UserDto;
 import com.thoughtworks.rslist.entity.UserEntity;
 import com.thoughtworks.rslist.exceptions.CommonException;
 import com.thoughtworks.rslist.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -64,13 +63,6 @@ public class UserService {
     }
 
     public void updateUserById(Integer id, UserDto userDto) throws CommonException {
-//        Optional<UserEntity> res =  userRepository.findById(id);
-//        if (res.isPresent()) {
-//            UserEntity userEntity = res.get();
-//            userEntity.setId(id);
-//            userRepository.save(userEntity);
-//        } else
-//            throw new CommonException(String.format("can not find user by id %d", id));
         UserEntity userEntity = userDtoToUserEntity(userDto);
         userEntity.setId(id);
         userRepository.save(userEntity);

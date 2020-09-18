@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "vote")
@@ -24,5 +25,5 @@ public class VoteEntity {
     private Integer eventId;
     private Integer userId;
     private Integer voteNum;
-    private String voteTime;
+    private LocalDateTime voteTime;
 }
