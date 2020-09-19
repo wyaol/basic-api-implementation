@@ -4,18 +4,18 @@ import com.thoughtworks.rslist.dto.Event;
 import com.thoughtworks.rslist.entity.EventEntity;
 import com.thoughtworks.rslist.exceptions.CommonException;
 import com.thoughtworks.rslist.repository.EventRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class EventService {
 
-    @Resource
-    EventRepository eventRepository;
+    private EventRepository eventRepository;
+
+    public EventService(EventRepository eventRepository) {
+        this.eventRepository = eventRepository;
+    }
 
     private Event eventEntityToEvent(EventEntity eventEntity) {
         return new Event(eventEntity.getEventName(), eventEntity.getKeyWord(), eventEntity.getUserId(), eventEntity.getVoteNum());

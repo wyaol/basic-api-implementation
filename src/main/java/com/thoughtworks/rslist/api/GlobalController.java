@@ -1,7 +1,7 @@
 package com.thoughtworks.rslist.api;
 
 import com.thoughtworks.rslist.dto.ErrorDto;
-import com.thoughtworks.rslist.exceptions.*;
+import com.thoughtworks.rslist.exceptions.CommonException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;

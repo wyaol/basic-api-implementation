@@ -9,7 +9,6 @@ import com.thoughtworks.rslist.repository.VoteRepository;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -18,14 +17,17 @@ import java.util.List;
 @Service
 public class VoteService {
 
-    @Resource
-    VoteRepository voteRepository;
+    private VoteRepository voteRepository;
 
-    @Resource
-    UserService userService;
+    private UserService userService;
 
-    @Resource
-    EventService eventService;
+    private EventService eventService;
+
+    VoteService(VoteRepository voteRepository, UserService userService, EventService eventService) {
+        this.voteRepository = voteRepository;
+        this.userService = userService;
+        this.eventService = eventService;
+    }
 
     private VoteEntity voteDtoToVoteEntity(VoteDto voteDto) {
         return VoteEntity.builder()

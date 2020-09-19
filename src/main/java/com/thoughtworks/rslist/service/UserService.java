@@ -6,7 +6,6 @@ import com.thoughtworks.rslist.exceptions.CommonException;
 import com.thoughtworks.rslist.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -14,8 +13,11 @@ import java.util.Optional;
 @Service
 public class UserService {
 
-    @Resource
-    UserRepository userRepository;
+    private UserRepository userRepository;
+
+    UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     private UserEntity userDtoToUserEntity(UserDto userDto) {
         return UserEntity.builder()
