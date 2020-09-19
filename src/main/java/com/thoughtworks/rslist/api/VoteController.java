@@ -19,8 +19,11 @@ import java.util.List;
 @RestController
 public class VoteController {
 
-    @Resource
-    VoteService voteService;
+    private VoteService voteService;
+
+    VoteController(VoteService voteService) {
+        this.voteService = voteService;
+    }
 
     @PostMapping("/rs/vote/{rsEventId}")
     public ResponseEntity vote(@PathVariable int rsEventId, @RequestBody VoteDto voteDto) throws CommonException {

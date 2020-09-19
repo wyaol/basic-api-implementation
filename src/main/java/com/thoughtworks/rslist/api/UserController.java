@@ -18,10 +18,11 @@ import java.util.List;
 @RestController
 public class UserController {
 
-    public static List<UserDto> userDtoList = new ArrayList<>(Arrays.asList(new UserDto("name", "gender", 18, "289672494@qq.com", "17307404504")));
+    private UserService userService;
 
-    @Resource
-    UserService userService;
+    UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @PostMapping("/user/register")
     public ResponseEntity register(@Valid @RequestBody UserDto userDto, BindingResult re) throws InvalidUserException {
