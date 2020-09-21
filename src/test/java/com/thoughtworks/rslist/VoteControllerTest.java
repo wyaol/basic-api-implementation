@@ -46,7 +46,7 @@ public class VoteControllerTest {
         voteRepository.save(new VoteEntity(2, 1, 1, 1, voteTime22));
         voteRepository.save(new VoteEntity(3, 1, 1, 1, voteTime33));
 
-        mockMvc.perform(get(String.format("/vote?start=%s&end=%s&page=%d", start, end, 0)))
+        mockMvc.perform(get(String.format("/votes?start=%s&end=%s&page=%d", start, end, 0)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)));
     }

@@ -18,6 +18,7 @@ public class GlobalController {
     })
     public ResponseEntity handleException(Exception e) {
         logger.error(e.getMessage());
+        e.printStackTrace();
         return ResponseEntity.status(400).body(new ErrorDto(e.getMessage()));
     }
 }

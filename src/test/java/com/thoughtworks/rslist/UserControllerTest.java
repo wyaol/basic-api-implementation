@@ -40,55 +40,55 @@ public class UserControllerTest {
     @Test
     void should_register_user() throws Exception {
         UserDto userDto = new UserDto("wan", "gender", 18, "289672494@qq.com", "17307404504");
-        validPost(userDto, "/user/register", status().is(201));
+        validPost(userDto, "/users/register", status().is(201));
     }
 
     @Test
     void should_register_fail_when_name_is_empty() throws Exception {
         UserDto userDto = new UserDto("", "gender", 18, "289672494@qq.com", "17307404504");
-        validPost(userDto, "/user/register", status().isBadRequest());
+        validPost(userDto, "/users/register", status().isBadRequest());
     }
 
     @Test
     void should_register_fail_when_name_size_more_then_8() throws Exception {
         UserDto userDto = new UserDto("123456789", "gender", 18, "289672494@qq.com", "17307404504");
-        validPost(userDto, "/user/register", status().isBadRequest());
+        validPost(userDto, "/users/register", status().isBadRequest());
     }
 
     @Test
     void should_register_fail_when_gender_is_empty() throws Exception {
         UserDto userDto = new UserDto("name", "", 18, "289672494@qq.com", "17307404504");
-        validPost(userDto, "/user/register", status().isBadRequest());
+        validPost(userDto, "/users/register", status().isBadRequest());
     }
 
     @Test
     void should_register_fail_when_age_is_empty() throws Exception {
         UserDto userDto = new UserDto("name", "gender", null, "289672494@qq.com", "17307404504");
-        validPost(userDto, "/user/register", status().isBadRequest());
+        validPost(userDto, "/users/register", status().isBadRequest());
     }
 
     @Test
     void should_register_fail_when_age_is_less_then_18() throws Exception {
         UserDto userDto = new UserDto("name", "gender", 17, "289672494@qq.com", "17307404504");
-        validPost(userDto, "/user/register", status().isBadRequest());
+        validPost(userDto, "/users/register", status().isBadRequest());
     }
 
     @Test
     void should_register_fail_when_age_is_more_then_100() throws Exception {
         UserDto userDto = new UserDto("name", "gender", 101, "289672494@qq.com", "17307404504");
-        validPost(userDto, "/user/register", status().isBadRequest());
+        validPost(userDto, "/users/register", status().isBadRequest());
     }
 
     @Test
     void should_register_fail_when_email_not_standard() throws Exception {
         UserDto userDto = new UserDto("name", "gender", 18, "email", "17307404504");
-        validPost(userDto, "/user/register", status().isBadRequest());
+        validPost(userDto, "/users/register", status().isBadRequest());
     }
 
     @Test
     void should_register_fail_when_phone_not_standard() throws Exception {
         UserDto userDto = new UserDto("name", "gender", 18, "289672494@qq.com", "phone");
-        validPost(userDto, "/user/register", status().isBadRequest());
+        validPost(userDto, "/users/register", status().isBadRequest());
     }
 
     @Test
@@ -96,15 +96,15 @@ public class UserControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
         UserDto userDto = new UserDto("xiaowang", "female", 17, "email", "phone");
         String json = objectMapper.writeValueAsString(userDto);
-        mockMvc.perform(post("/user/register").content(json).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/users/register").content(json).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.error", is("invalid user")));
     }
 
     @Test
     void should_get_user_by_id() throws Exception {
         UserDto userDto = new UserDto("wan", "gender", 18, "289672494@qq.com", "17307404504");
-        validPost(userDto, "/user/register", status().isCreated());
-        mockMvc.perform(get("/user/1"))
+        validPost(userDto, "/users/register", status().isCreated());
+        mockMvc.perform(get("/users/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.user_name", is("wan")));
     }
@@ -112,9 +112,9 @@ public class UserControllerTest {
     @Test
     void should_delete_user_by_id() throws Exception {
         UserDto userDto = new UserDto("wan", "gender", 18, "289672494@qq.com", "17307404504");
-        validPost(userDto, "/user/register", status().isCreated());
-        mockMvc.perform(delete("/user/1"))
-                .andExpect(status().isOk());
+        validPost(userDto, "/users/register", status().isCreated());
+        mockMvc.perform(delete("/users/1"))
+                .andExpect(status().isNoContent());
         mockMvc.perform(get("/users"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(0)));
@@ -126,24 +126,24 @@ public class UserControllerTest {
         // 添加用户
         ObjectMapper objectMapper = new ObjectMapper();
         UserDto userDto = new UserDto("wan", "gender", 18, "289672494@qq.com", "17307404504");
-        mockMvc.perform(post("/user/register").content(objectMapper.writeValueAsString(userDto)).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/users/register").content(objectMapper.writeValueAsString(userDto)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
 
         // 添加时事件
         Event event = new Event("热搜事件名", "关键字", 1);
         String json = objectMapper.writeValueAsString(event);
-        mockMvc.perform(post("/rs/event").content(json).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/events").content(json).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
 
         // 删除用户
-        mockMvc.perform(delete("/user/1"))
-                .andExpect(status().isOk());
+        mockMvc.perform(delete("/users/1"))
+                .andExpect(status().isNoContent());
 
         // 查看用户和事件
         mockMvc.perform(get("/users"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(0)));
-        mockMvc.perform(get("/rs/event/list_all"))
+        mockMvc.perform(get("/events"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(0)));
 

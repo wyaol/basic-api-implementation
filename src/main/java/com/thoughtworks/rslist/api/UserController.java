@@ -20,26 +20,26 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/user/register")
+    @PostMapping("/users/register")
     public ResponseEntity register(@Valid @RequestBody UserDto userDto, BindingResult re) throws InvalidUserException {
         if (re.getAllErrors().size() != 0) throw new InvalidUserException("invalid user");
-        Integer userId = userService.addOneUser(userDto);
-        return ResponseEntity.status(HttpStatus.CREATED).header("index", String.valueOf(userId)).build();
+        userService.addOneUser(userDto);
+        return ResponseEntity.status(HttpStatus.CREATED).header("Accept", "application/json").build();
     }
 
     @GetMapping("/users")
     public ResponseEntity getUsers() {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.getAllUser());
+        return ResponseEntity.status(HttpStatus.OK).header("Accept", "application/json").body(userService.getAllUser());
     }
 
-    @GetMapping("/user/{userId}")
+    @GetMapping("/users/{userId}")
     public ResponseEntity getOneUserById(@PathVariable(name = "userId") Integer userId) throws CommonException {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.getOneUser(userId));
+        return ResponseEntity.status(HttpStatus.OK).header("Accept", "application/json").body(userService.getOneUser(userId));
     }
 
-    @DeleteMapping("/user/{userId}")
+    @DeleteMapping("/users/{userId}")
     public ResponseEntity deleteOneUserById(@PathVariable(name = "userId") Integer userId) throws CommonException {
         userService.deleteOneUser(userId);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).header("Accept", "application/json").build();
     }
 }

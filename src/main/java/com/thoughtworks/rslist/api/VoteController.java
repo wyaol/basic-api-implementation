@@ -24,14 +24,14 @@ public class VoteController {
         this.voteService = voteService;
     }
 
-    @PostMapping("/rs/vote/{rsEventId}")
+    @PostMapping("/votes/{rsEventId}")
     public ResponseEntity vote(@PathVariable int rsEventId, @RequestBody VoteDto voteDto) throws CommonException {
         voteDto.setEventId(rsEventId);
         voteService.vote(voteDto);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.CREATED).header("Accept", "application/json").build();
     }
 
-    @GetMapping("/vote")
+    @GetMapping("/votes")
     public ResponseEntity getVotesByStartAndEnd(
             @RequestParam(name = "start") String start,
             @RequestParam(name = "end") String end,
@@ -40,6 +40,6 @@ public class VoteController {
         LocalDateTime startTime = LocalDateTime.parse(start, timeDtf);
         LocalDateTime endTime = LocalDateTime.parse(end, timeDtf);
         List<VoteDto> voteDtos = voteService.getVotesByStartAndEnd(startTime, endTime, pageable);
-        return ResponseEntity.status(HttpStatus.OK).body(voteDtos);
+        return ResponseEntity.status(HttpStatus.OK).header("Accept", "application/json").body(voteDtos);
     }
 }

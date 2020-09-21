@@ -26,44 +26,41 @@ public class RsController {
         this.eventService = eventService;
     }
 
-    @GetMapping("/rs/event/{id}")
+    @GetMapping("/events/{id}")
     public ResponseEntity getOneEvent(@PathVariable int id) throws CommonException {
         Event event = eventService.getEventById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(event);
+        return ResponseEntity.status(HttpStatus.OK).header("Accept", "application/json").body(event);
     }
 
-    @GetMapping("/rs/event")
-    public ResponseEntity getRangeEvents(@RequestParam(required = false, defaultValue = "1") Integer start,
-                                         @RequestParam(required = false, defaultValue = "-1") Integer end) throws InvalidRequestParamException {
+    @GetMapping("/events")
+    public ResponseEntity getRangeEvents(@RequestParam(required = false) Integer start,
+                                         @RequestParam(required = false) Integer end) throws InvalidRequestParamException {
         List<Event> events = eventService.getEvents();
-        if (start < 0 || end > events.size()) throw new InvalidRequestParamException("invalid request param");
-        return ResponseEntity.created(null).body(events.subList(start - 1, end));
+        if (start == null || end == null) events = eventService.getEvents();
+        else if (start < 0 || end > events.size()) throw new InvalidRequestParamException("invalid request param");
+        else {
+            events = events.subList(start - 1, end);
+        }
+        return ResponseEntity.status(HttpStatus.OK).header("Accept", "application/json").body(events);
     }
 
-    @GetMapping("/rs/event/list_all")
-    public ResponseEntity getAllEvent() {
-        List<Event> events = eventService.getEvents();
-        return ResponseEntity.status(HttpStatus.OK).body(events);
-    }
-
-    @PostMapping("/rs/event")
+    @PostMapping("/events")
     public ResponseEntity addOneEvent(@Valid @RequestBody Event event, BindingResult re) throws CommonException {
         if (re.getAllErrors().size() != 0) throw new InvalidParamException("invalid param");
         userService.getOneUser(event.getUserId());
         eventService.addOneEvent(event);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.CREATED).header("Accept", "application/json").build();
     }
 
-    @PatchMapping("/rs/{rsEventId}")
+    @PatchMapping("/events/{rsEventId}")
     public ResponseEntity editOneEvent(@PathVariable("rsEventId") int rsEventId, @RequestBody Event event) throws CommonException {
         eventService.updateEvent(rsEventId, event);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.OK).header("Accept", "application/json").build();
     }
 
-    @DeleteMapping("/rs/event/{id}")
+    @DeleteMapping("/events/{id}")
     public ResponseEntity deleteOneEvent(@PathVariable("id") int id) {
-        List<Event> events = eventService.getEvents();
         eventService.deleteEventById(id);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).header("Accept", "application/json").build();
     }
 }

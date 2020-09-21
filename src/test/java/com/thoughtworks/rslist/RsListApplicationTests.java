@@ -34,7 +34,7 @@ class RsListApplicationTests {
         Event event = new Event("热搜事件名", "关键字", 1);
         String json = objectMapper.writeValueAsString(event);
 
-        mockMvc.perform(post("/rs/event").content(json).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/events").content(json).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
 
@@ -48,12 +48,12 @@ class RsListApplicationTests {
     private void addOneEventAndUser(UserDto userDto, Event event) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
 
-        mockMvc.perform(post("/user/register").content(objectMapper.writeValueAsString(userDto)).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/users/register").content(objectMapper.writeValueAsString(userDto)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
 
         String json = objectMapper.writeValueAsString(event);
 
-        mockMvc.perform(post("/rs/event").content(json).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/events").content(json).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
     }
 
@@ -67,9 +67,9 @@ class RsListApplicationTests {
         Event newEvent = new Event("新的热搜事件名", "新的关键字", 1);
         String json = objectMapper.writeValueAsString(newEvent);
 
-        mockMvc.perform(patch("/rs/1").content(json).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(patch("/events/1").content(json).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-        mockMvc.perform(get("/rs/event/1"))
+        mockMvc.perform(get("/events/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.eventName", is("新的热搜事件名")));
     }
@@ -80,10 +80,10 @@ class RsListApplicationTests {
         Event event = new Event("热搜事件名", "关键字", 1);
         addOneEventAndUser(userDto, event);
 
-        mockMvc.perform(delete("/rs/event/1"))
-                .andExpect(status().isOk());
+        mockMvc.perform(delete("/events/1"))
+                .andExpect(status().isNoContent());
 
-        mockMvc.perform(get("/rs/event/list_all"))
+        mockMvc.perform(get("/events"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(0)));
 
@@ -91,7 +91,7 @@ class RsListApplicationTests {
 
     @Test
     void should_throw_when_invalid_request_param() throws Exception {
-        mockMvc.perform(get("/rs/event?start=1&end=4"))
+        mockMvc.perform(get("/events?start=1&end=4"))
                 .andExpect(jsonPath("$.error", is("invalid request param")));
     }
 
@@ -104,12 +104,12 @@ class RsListApplicationTests {
         VoteDto voteDto = new VoteDto(1, 1, 5, LocalDateTime.now());
         ObjectMapper objectMapper = new ObjectMapper();
         String json = objectMapper.writeValueAsString(voteDto);
-        mockMvc.perform(post("/rs/vote/1").content(json).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/votes/1").content(json).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
-        mockMvc.perform(get("/rs/event/1"))
+        mockMvc.perform(get("/events/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.voteNum", is(5)));
-        mockMvc.perform(get("/user/1"))
+        mockMvc.perform(get("/users/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.vote", is(5)));
     }
